@@ -1,4 +1,4 @@
-package br.ufma.lsdi.moa.servertest;
+package br.ufma.lsdi.moa.servertest.mqtt;
 
 import java.util.UUID;
 
@@ -11,7 +11,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import br.ufma.lsdi.moa.servertest.moa.ClassifierData;
 import br.ufma.lsdi.moa.servertest.moa.GeneratedData;
-import br.ufma.lsdi.moa.servertest.mqtt.ConfMqttBroker;
 
 
 
@@ -25,10 +24,11 @@ public class MqttSubcribe implements Runnable,IMqttMessageListener {
     private MemoryPersistence persistence = new MemoryPersistence();
 
 	private ClassifierData classifier;
-	String ip;
+	String location;
 	
 	public MqttSubcribe(String ip){
-		this.ip=ip;
+		
+		location="tcp://"+ip+":1883";
 	}
 	
     public void connect() {
@@ -36,14 +36,14 @@ public class MqttSubcribe implements Runnable,IMqttMessageListener {
     	classifier.start();
 
         try {
-        	String location="tcp://"+ip+":1883";
+        	
         	System.out.println("location:"+location);
             MqttClient sampleClient = new MqttClient(location, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setAutomaticReconnect(true);
             connOpts.setCleanSession(true);
             connOpts.setConnectionTimeout(10);
-            System.out.println("Connecting to broker: "+ConfMqttBroker.broker);
+            System.out.println("Connecting to broker: "+location);
             sampleClient.connect(connOpts);
             System.out.println("Connected");
    

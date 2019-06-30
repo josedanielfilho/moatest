@@ -3,7 +3,6 @@ package br.ufma.lsdi.moa.servertest.mqtt;
 import java.util.Arrays;
 import java.util.UUID;
 
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -14,6 +13,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import br.ufma.lsdi.moa.servertest.moa.GeneratedData;
 
+
 public class MqttPublishSample {
     private String topic        = "MOA Teste";
     private String content      = "Message from MqttPublishSample";
@@ -23,18 +23,24 @@ public class MqttPublishSample {
     private String clientId      = UUID.randomUUID().toString();
     private MemoryPersistence persistence = new MemoryPersistence();
 	private GeneratedData generatedData;
-    
+
+	private String  broker;
+	    
+	public MqttPublishSample(String ip){
+		
+		broker= "tcp://"+ip+":1883";
+	}
 	public void connect() {
 		generatedData=new GeneratedData();
 		generatedData.start();
 
         try {
-            MqttClient sampleClient = new MqttClient(ConfMqttBroker.broker, clientId, persistence);
+            MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setAutomaticReconnect(true);
             connOpts.setCleanSession(true);
             connOpts.setConnectionTimeout(10);
-            System.out.println("Connecting to broker: "+ConfMqttBroker.broker);
+            System.out.println("Connecting to broker: "+broker);
             sampleClient.connect(connOpts);
             System.out.println("Connected");
             System.out.println("Publishing message: "+content);
@@ -48,6 +54,12 @@ public class MqttPublishSample {
                message.setQos(qos);
                sampleClient.publish(topic, message);
                System.out.println("Message published");
+               try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
            }
             
             sampleClient.disconnect();
